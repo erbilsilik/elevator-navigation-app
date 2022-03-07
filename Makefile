@@ -2,7 +2,7 @@ APP=elevator-navigation-app
 
 DIRECTORIES = $(shell go list ./... | grep pkg)
 
-run: ## Runs the applications
+run: ## Runs the application
 	go mod tidy
 	go build
 	chmod +x ./elevator-navigation-app
