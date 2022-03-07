@@ -38,6 +38,10 @@ func (e *Elevator) LoadUI(app fyne.App) {
 	e.window.SetContent(container.NewGridWithColumns(1,
 		e.output,
 		container.NewGridWithColumns(1,
+			e.strButton("6")),
+		container.NewGridWithColumns(1,
+			e.strButton("5")),
+		container.NewGridWithColumns(1,
 			e.strButton("4")),
 		container.NewGridWithColumns(1,
 			e.strButton("3")),
@@ -45,10 +49,6 @@ func (e *Elevator) LoadUI(app fyne.App) {
 			e.strButton("2")),
 		container.NewGridWithColumns(1,
 			e.strButton("1")),
-		container.NewGridWithColumns(1,
-			e.strButton("P1")),
-		container.NewGridWithColumns(1,
-			e.strButton("P2")),
 	))
 
 	e.window.Resize(fyne.NewSize(600, 600))

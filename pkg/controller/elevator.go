@@ -2,18 +2,17 @@ package controller
 
 import (
 	"fmt"
-	model2 "github.com/erbilsilik/elevator-navigation-app/pkg/model"
+	"github.com/erbilsilik/elevator-navigation-app/pkg/model"
 	"time"
 )
 
 type ElevatorController struct {
-	floors       *[]model2.Floor
-	elevator     *model2.Elevator
+	floors       *[]model.Floor
+	elevator     *model.Elevator
 	travelTime   time.Duration
 	waitTime   	 time.Duration
 	currentIndex int
 	queue        []int
-	callback     func(event string, currentFloor string)
 }
 
 func (ec *ElevatorController) getFloorIndex(element string) int {
@@ -25,13 +24,21 @@ func (ec *ElevatorController) getFloorIndex(element string) int {
 	return -1
 }
 
-func (ec *ElevatorController) getFloorFromIndex(index int) model2.Floor {
+func (ec *ElevatorController) getFloorFromIndex(index int) model.Floor {
 	for k, v := range *ec.floors {
 		if k == index {
-			return model2.Floor{Name: v.Name, IsPressed: v.IsPressed}
+			return model.Floor{Name: v.Name, IsPressed: v.IsPressed}
 		}
 	}
-	return model2.Floor{}
+	return model.Floor{}
+}
+
+func (ec *ElevatorController) isElevatorGoingUp(floorIndex int) bool {
+	return ec.currentIndex < floorIndex && ec.elevator.Motion == 1
+}
+
+func (ec *ElevatorController) isElevatorGoingDown(floorIndex int) bool {
+	return ec.currentIndex > floorIndex && ec.elevator.Motion == -1
 }
 
 func (ec *ElevatorController) OnPress(floor string) {
@@ -40,8 +47,9 @@ func (ec *ElevatorController) OnPress(floor string) {
 		return
 	}
 	if len(ec.queue) != 0 {
-		if ec.currentIndex < ec.getFloorIndex(floor) {
-			(*ec.floors)[ec.getFloorIndex(floor)].IsPressed = true
+		floorIndex := ec.getFloorIndex(floor)
+		if ec.isElevatorGoingUp(floorIndex) || ec.isElevatorGoingDown(floorIndex) {
+			(*ec.floors)[floorIndex].IsPressed = true
 		} else {
 			ec.queue = append(ec.queue, index)
 		}
@@ -93,7 +101,7 @@ func (ec *ElevatorController) fireEvent(floor string) {
 	fmt.Println(floor + " : " + ec.elevator.CurrentFloor)
 }
 
-func NewElevatorController(floors *[]model2.Floor, elevator *model2.Elevator, travelTime time.Duration, waitTime time.Duration,
+func NewElevatorController(floors *[]model.Floor, elevator *model.Elevator, travelTime time.Duration, waitTime time.Duration,
 	currentIndex int, queue []int) *ElevatorController {
 	return &ElevatorController{
 		floors: floors,

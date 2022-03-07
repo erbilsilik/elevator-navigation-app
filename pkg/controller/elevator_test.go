@@ -1,7 +1,7 @@
 package controller
 
 import (
-	model "github.com/erbilsilik/elevator-navigation-app/pkg/model"
+	"github.com/erbilsilik/elevator-navigation-app/pkg/model"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
@@ -26,7 +26,6 @@ func init() {
 		time.Second * 2,
 		0,
 		nil,
-		//elevatorView.Display,
 	)
 }
 
@@ -55,6 +54,31 @@ func Test_GetFloorFromIndex_WhenFloorExist(t *testing.T) {
 	assert.Equal(t, false, floor.IsPressed)
 }
 
+func Test_IsElevatorGoingUp_WhenIsGoing(t *testing.T) {
+	// arrange
+	elevatorController.currentIndex = 0
+	elevatorController.elevator.Motion = 1
+
+	// act
+	isGoingUp := elevatorController.isElevatorGoingUp(3)
+
+	// assert
+	assert.Equal(t, true, isGoingUp)
+}
+
+func Test_IsElevatorGoingDown_WhenIsGoing(t *testing.T) {
+	// arrange
+	elevatorController.currentIndex = 3
+	elevatorController.elevator.Motion = -1
+
+	// act
+	isGoingDown := elevatorController.isElevatorGoingDown(1)
+
+	// assert
+	assert.Equal(t, true, isGoingDown)
+}
+
+
 func Test_OnPress_WhenQueueIsEmpty(t *testing.T) {
 	// Act
 	elevatorController.OnPress("4")
@@ -62,34 +86,6 @@ func Test_OnPress_WhenQueueIsEmpty(t *testing.T) {
 	// Assert
 	assert.Equal(t, 5, elevatorController.queue[0])
 }
-
-/*
-func Test_OnPress_WhenQueueIs_Not_EmptyAndIsLess(t *testing.T) {
-	// Arrange
-	elevatorController.queue = append(elevatorController.queue, 0)
-	elevatorController.currentIndex = 0
-
-	// Act
-	elevatorController.OnPress("3")
-
-	// Assert
-	assert.Equal(t, 1, len(elevatorController.queue))
-}
-*/
-
-/*
-func Test_OnPress_WhenQueueIs_Not_EmptyAndIsGreater(t *testing.T) {
-	// Arrange
-	elevatorController.queue = append(elevatorController.queue, 3)
-	elevatorController.currentIndex = 4
-
-	// Act
-	elevatorController.OnPress("1")
-
-	// Assert
-	assert.Equal(t, 2, len(elevatorController.queue))
-}
- */
 
 func Test_Handle_WhenArrived(t *testing.T) {
 	// Arrange
