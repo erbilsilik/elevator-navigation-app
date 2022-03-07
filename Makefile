@@ -3,6 +3,7 @@ APP=elevator-navigation-app
 DIRECTORIES = $(shell go list ./... | grep pkg)
 
 run: ## Runs the application
+	go get fyne.io/fyne/v2
 	go mod tidy
 	go build
 	chmod +x ./elevator-navigation-app
