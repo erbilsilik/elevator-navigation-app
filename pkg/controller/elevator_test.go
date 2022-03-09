@@ -54,38 +54,6 @@ func Test_GetFloorFromIndex_WhenFloorExist(t *testing.T) {
 	assert.Equal(t, false, floor.IsPressed)
 }
 
-func Test_IsElevatorGoingUp_WhenIsGoing(t *testing.T) {
-	// arrange
-	elevatorController.currentIndex = 0
-	elevatorController.elevator.Motion = 1
-
-	// act
-	isGoingUp := elevatorController.isElevatorGoingUp(3)
-
-	// assert
-	assert.Equal(t, true, isGoingUp)
-}
-
-func Test_IsElevatorGoingDown_WhenIsGoing(t *testing.T) {
-	// arrange
-	elevatorController.currentIndex = 3
-	elevatorController.elevator.Motion = -1
-
-	// act
-	isGoingDown := elevatorController.isElevatorGoingDown(1)
-
-	// assert
-	assert.Equal(t, true, isGoingDown)
-}
-
-
-func Test_OnPress_WhenQueueIsEmpty(t *testing.T) {
-	// Act
-	elevatorController.OnPress("4")
-
-	// Assert
-	assert.Equal(t, 5, elevatorController.queue[0])
-}
 
 func Test_Handle_WhenArrived(t *testing.T) {
 	// Arrange

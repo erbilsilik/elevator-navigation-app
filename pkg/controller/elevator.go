@@ -33,55 +33,87 @@ func (ec *ElevatorController) getFloorFromIndex(index int) model.Floor {
 	return model.Floor{}
 }
 
-func (ec *ElevatorController) isElevatorGoingUp(floorIndex int) bool {
-	return ec.currentIndex < floorIndex && ec.elevator.Motion == 1
-}
-
-func (ec *ElevatorController) isElevatorGoingDown(floorIndex int) bool {
-	return ec.currentIndex > floorIndex && ec.elevator.Motion == -1
-}
-
-func (ec *ElevatorController) OnPress(destinationFloor string, sourceFloor string) {
-	request := model.Request{DestinationFloor: destinationFloor, SourceFloor: sourceFloor}
-
-	destinationFloorIndex := ec.getFloorIndex(request.DestinationFloor)
+func (ec *ElevatorController) isValidDestination(destinationFloorIndex int) bool {
 	if destinationFloorIndex < 0 {
+		return false
+	}
+	return true
+}
+
+func (ec *ElevatorController) isQueueEmpty() bool {
+	return len(ec.queue) == 0
+}
+
+func (ec *ElevatorController) isElevatorGoingUp() bool {
+	return ec.elevator.Motion == 1
+}
+
+func (ec *ElevatorController) isElevatorGoingDown() bool {
+	return ec.elevator.Motion == -1
+}
+
+func (ec *ElevatorController) isCurrentFloorLessThanDestinationFloor(destinationFloorIndex int) bool {
+	return ec.currentIndex < destinationFloorIndex
+}
+
+func (ec *ElevatorController) isCurrentFloorGreaterThanDestinationFloor(destinationFloorIndex int) bool {
+	return ec.currentIndex > destinationFloorIndex
+}
+
+func (ec *ElevatorController) updateDestinations(destinationFloorIndex int, lastDestinationFloorIndex int) {
+	if destinationFloorIndex < lastDestinationFloorIndex {
+		(*ec.floors)[destinationFloorIndex].IsPressed = true
+	} else {
+		(*ec.floors)[lastDestinationFloorIndex].IsPressed = true
+		ec.queue = ec.queue[1:]
+		ec.queue = append(ec.queue, destinationFloorIndex)
+	}
+}
+
+func (ec *ElevatorController) OnPress(sourceFloor string, direction int) {
+	request := model.Request{SourceFloor: sourceFloor, Direction: direction}
+
+	destinationFloorIndex := ec.getFloorIndex(request.SourceFloor)
+	if !ec.isValidDestination(destinationFloorIndex) {
 		return
 	}
-	if len(ec.queue) != 0 {
-		lastDestinationFloorIndex := ec.queue[len(ec.queue) - 1]
-
-		if ec.currentIndex < destinationFloorIndex && ec.elevator.Motion == 1 {
-			if destinationFloorIndex < lastDestinationFloorIndex {
-				(*ec.floors)[destinationFloorIndex].IsPressed = true
-			} else {
-				(*ec.floors)[lastDestinationFloorIndex].IsPressed = true
-				ec.queue = ec.queue[1:]
-				ec.queue = append(ec.queue, destinationFloorIndex)
-			}
-		} else if ec.currentIndex > destinationFloorIndex && ec.elevator.Motion == -1 {
-			if destinationFloorIndex > lastDestinationFloorIndex {
-				(*ec.floors)[destinationFloorIndex].IsPressed = true
-			} else {
-				(*ec.floors)[lastDestinationFloorIndex].IsPressed = true
-				ec.queue = ec.queue[1:]
-				ec.queue = append(ec.queue, destinationFloorIndex)
-			}
+	if !ec.isQueueEmpty() {
+		lastDestinationFloorIndex := ec.queue[0]
+		if ec.isCurrentFloorLessThanDestinationFloor(destinationFloorIndex) && ec.isElevatorGoingUp() ||
+			ec.isCurrentFloorGreaterThanDestinationFloor(destinationFloorIndex) && ec.isElevatorGoingDown() {
+				if request.IsExternalRequest() {
+					var florIndex int
+					if request.ShouldGoUp() {
+						florIndex = ec.getFloorIndex("6")
+						ec.updateDestinations(florIndex, lastDestinationFloorIndex)
+						(*ec.floors)[destinationFloorIndex].IsPressed = true
+					} else if request.ShouldGoDown() {
+						florIndex = ec.getFloorIndex("1")
+						ec.updateDestinations(florIndex, lastDestinationFloorIndex)
+						(*ec.floors)[destinationFloorIndex].IsPressed = true
+					}
+				} else {
+					ec.updateDestinations(destinationFloorIndex, lastDestinationFloorIndex)
+				}
 		} else {
 			ec.queue = append(ec.queue, destinationFloorIndex)
 		}
 	} else {
-		if request.IsExternalRequest() {
-			sourceFloorIndex := ec.getFloorIndex(request.SourceFloor)
-			ec.queue = append(ec.queue, sourceFloorIndex)
-			(*ec.floors)[sourceFloorIndex].IsPressed = true
-		}
 		ec.queue = append(ec.queue, destinationFloorIndex)
-		go ec.handle()
+		if request.IsExternalRequest() {
+			var nextFloorIndex int
+			if request.ShouldGoDown() {
+				nextFloorIndex = ec.getFloorIndex("1")
+			} else if request.ShouldGoUp() {
+				nextFloorIndex = ec.getFloorIndex("6")
+			}
+			ec.queue = append(ec.queue, nextFloorIndex)
+		}
+		go ec.navigate()
 	}
 }
 
-func (ec *ElevatorController) handle() {
+func (ec *ElevatorController) navigate() {
 	if len(ec.queue) == 0 {
 		return
 	}
@@ -116,7 +148,7 @@ func (ec *ElevatorController) handle() {
 		}
 	}
 	(*ec.floors)[ec.currentIndex].IsPressed = false
-	ec.handle()
+	ec.navigate()
 }
 
 func (ec *ElevatorController) fireEvent(floor string) {

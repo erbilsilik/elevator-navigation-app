@@ -26,18 +26,21 @@ func (e *Elevator) Display(event string, currentFloor string) {
 
 func (e *Elevator) internalRequestButton(floor string) *widget.Button {
 	return e.addButton(floor, func() {
-		e.elevatorController.OnPress(floor, "")
+		e.elevatorController.OnPress(floor, 0)
 	})
 }
 
-func (e *Elevator) externalRequestButton(destinationFloor string, sourceFloor string) *widget.Button {
-	return e.addButton(destinationFloor, func() {
-		if destinationFloor == "Up" {
-			destinationFloor = "6"
-		} else if destinationFloor == "Down" {
-			destinationFloor = "1"
+func (e *Elevator) externalRequestButton(floorDirection string, sourceFloor string) *widget.Button {
+	return e.addButton(floorDirection, func() {
+		var direction int
+		if floorDirection == "Up" {
+			direction = 1
+		} else if floorDirection == "Down"{
+			direction = -1
+		} else {
+			direction = 0
 		}
-		e.elevatorController.OnPress(destinationFloor, sourceFloor)
+		e.elevatorController.OnPress(sourceFloor, direction)
 	})
 }
 
@@ -61,46 +64,33 @@ func (e *Elevator) LoadUI(app fyne.App) {
 		),
 		widget.NewSeparator(),
 		widget.NewLabel("Outside buttons"),
-		container.NewGridWithColumns(6,
+		container.NewGridWithColumns(2,
 			widget.NewLabel("Floor: 6"),
-			e.externalRequestButton("1", "6"),
-			e.externalRequestButton("2", "6"),
-			e.externalRequestButton("3", "6"),
-			e.externalRequestButton("4", "6"),
-			e.externalRequestButton("5", "6"),
+			e.externalRequestButton("Down", "6"),
 		),
 		container.NewGridWithColumns(3,
 			widget.NewLabel("Floor: 5"),
 			e.externalRequestButton("Up", "5"),
 			e.externalRequestButton("Down", "5"),
 		),
-		container.NewGridWithColumns(6,
+		container.NewGridWithColumns(3,
 			widget.NewLabel("Floor: 4"),
-			e.externalRequestButton("1", "4"),
-			e.externalRequestButton("2", "4"),
-			e.externalRequestButton("3", "4"),
-			e.externalRequestButton("5", "4"),
-			e.externalRequestButton("6", "4"),
+			e.externalRequestButton("Up", "4"),
+			e.externalRequestButton("Down", "4"),
 		),
-		container.NewGridWithColumns(5,
+		container.NewGridWithColumns(3,
 			widget.NewLabel("Floor: 3"),
-			e.externalRequestButton("1", "3"),
-			e.externalRequestButton("2", "3"),
-			e.externalRequestButton("5", "3"),
-			e.externalRequestButton("6", "3"),
+			e.externalRequestButton("Up", "3"),
+			e.externalRequestButton("Down", "3"),
 		),
 		container.NewGridWithColumns(3,
 			widget.NewLabel("Floor: 2"),
 			e.externalRequestButton("Up", "2"),
 			e.externalRequestButton("Down", "2"),
 		),
-		container.NewGridWithColumns(6,
+		container.NewGridWithColumns(2,
 			widget.NewLabel("Floor: 1"),
-			e.externalRequestButton("2", "1"),
-			e.externalRequestButton("3", "1"),
-			e.externalRequestButton("4", "1"),
-			e.externalRequestButton("5", "1"),
-			e.externalRequestButton("6", "1"),
+			e.externalRequestButton("Up", "1"),
 		),
 	))
 
