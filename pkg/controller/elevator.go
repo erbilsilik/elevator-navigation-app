@@ -42,19 +42,34 @@ func (ec *ElevatorController) isElevatorGoingDown(floorIndex int) bool {
 }
 
 func (ec *ElevatorController) OnPress(floor string) {
-	index := ec.getFloorIndex(floor)
-	if index < 0 {
+	floorIndex := ec.getFloorIndex(floor)
+	if floorIndex < 0 {
 		return
 	}
 	if len(ec.queue) != 0 {
-		floorIndex := ec.getFloorIndex(floor)
-		if ec.isElevatorGoingUp(floorIndex) || ec.isElevatorGoingDown(floorIndex) {
-			(*ec.floors)[floorIndex].IsPressed = true
+		destinationFloorIndex := ec.queue[len(ec.queue) - 1]
+
+		if ec.currentIndex < floorIndex && ec.elevator.Motion == 1 {
+			if floorIndex < destinationFloorIndex {
+				(*ec.floors)[floorIndex].IsPressed = true
+			} else {
+				(*ec.floors)[destinationFloorIndex].IsPressed = true
+				ec.queue = ec.queue[1:]
+				ec.queue = append(ec.queue, floorIndex)
+			}
+		} else if ec.currentIndex > floorIndex && ec.elevator.Motion == -1 {
+			if floorIndex > destinationFloorIndex {
+				(*ec.floors)[floorIndex].IsPressed = true
+			} else {
+				(*ec.floors)[destinationFloorIndex].IsPressed = true
+				ec.queue = ec.queue[1:]
+				ec.queue = append(ec.queue, floorIndex)
+			}
 		} else {
-			ec.queue = append(ec.queue, index)
+			ec.queue = append(ec.queue, floorIndex)
 		}
 	} else {
-		ec.queue = append(ec.queue, index)
+		ec.queue = append(ec.queue, floorIndex)
 		go ec.handle()
 	}
 }
