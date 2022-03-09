@@ -23,8 +23,8 @@ func main() {
 			{Name: "6", IsPressed: false},
 		},
 		elevator,
-		time.Second * 5,
-		time.Second * 10,
+		time.Second * 2,
+		time.Second * 3,
 		0,
 		nil,
 	)

@@ -82,10 +82,7 @@ func (ec *ElevatorController) OnPress(floor string, direction int) {
 				}
 			} else if request.IsDownButtonPressed() {
 				if ec.currentIndex > destinationFloorIndex {
-					previousDestinationIndex := ec.queue[0]
-					if previousDestinationIndex > destinationFloorIndex {
-						ec.setPressedFloor(destinationFloorIndex)
-					}
+					ec.setPressedFloor(destinationFloorIndex)
 				} else {
 					ec.queue = append(ec.queue, destinationFloorIndex)
 				}
@@ -98,7 +95,7 @@ func (ec *ElevatorController) OnPress(floor string, direction int) {
 					ec.queue = append(ec.queue, destinationFloorIndex)
 				}
 			} else if ec.elevator.Motion == -1 {
-				if ec.currentIndex < destinationFloorIndex {
+				if ec.currentIndex > destinationFloorIndex {
 					ec.setPressedFloor(destinationFloorIndex)
 				} else {
 					ec.queue = append(ec.queue, destinationFloorIndex)
