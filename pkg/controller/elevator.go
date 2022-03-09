@@ -54,6 +54,10 @@ func (ec *ElevatorController) setLastFloorIndex() {
 	ec.lastFloorIndex = ec.getFloorIndex("6")
 }
 
+func (ec *ElevatorController) setPressedFloor(floorIndex int) {
+	(*ec.floors)[floorIndex].IsPressed = true
+}
+
 func (ec *ElevatorController) OnPress(floor string, direction int) {
 	request := model.Request{Floor: floor, Direction: direction}
 
@@ -65,44 +69,44 @@ func (ec *ElevatorController) OnPress(floor string, direction int) {
 		if request.IsExternalRequest() {
 			if request.IsUpButtonPressed() {
 				if ec.currentIndex < destinationFloorIndex {
-					(*ec.floors)[destinationFloorIndex].IsPressed = true
+					previousDestinationIndex := ec.queue[0]
+					if previousDestinationIndex < destinationFloorIndex {
+						ec.queue = ec.queue[1:]
+						ec.queue = append(ec.queue, destinationFloorIndex)
+						ec.setPressedFloor(previousDestinationIndex)
+					} else {
+						(*ec.floors)[destinationFloorIndex].IsPressed = true
+					}
 				} else {
-					ec.queue = append(ec.queue, ec.lastFloorIndex)
+					ec.queue = append(ec.queue, destinationFloorIndex)
 				}
 			} else if request.IsDownButtonPressed() {
 				if ec.currentIndex > destinationFloorIndex {
-					(*ec.floors)[destinationFloorIndex].IsPressed = true
+					previousDestinationIndex := ec.queue[0]
+					if previousDestinationIndex > destinationFloorIndex {
+						ec.setPressedFloor(destinationFloorIndex)
+					}
 				} else {
-					ec.queue = append(ec.queue, ec.firstFloorIndex)
+					ec.queue = append(ec.queue, destinationFloorIndex)
 				}
 			}
 		} else {
 			if ec.elevator.Motion == 1 {
 				if ec.currentIndex < destinationFloorIndex {
-					(*ec.floors)[destinationFloorIndex].IsPressed = true
+					ec.setPressedFloor(destinationFloorIndex)
 				} else {
 					ec.queue = append(ec.queue, destinationFloorIndex)
 				}
 			} else if ec.elevator.Motion == -1 {
 				if ec.currentIndex < destinationFloorIndex {
-					(*ec.floors)[destinationFloorIndex].IsPressed = true
+					ec.setPressedFloor(destinationFloorIndex)
 				} else {
 					ec.queue = append(ec.queue, destinationFloorIndex)
 				}
 			}
 		}
 	} else {
-		if request.IsExternalRequest() {
-			ec.queue = append(ec.queue, destinationFloorIndex)
-
-			if request.IsUpButtonPressed() {
-				ec.queue = append(ec.queue, ec.lastFloorIndex)
-			} else if request.IsDownButtonPressed() {
-				ec.queue = append(ec.queue, ec.firstFloorIndex)
-			}
-		} else {
-			ec.queue = append(ec.queue, destinationFloorIndex)
-		}
+		ec.queue = append(ec.queue, destinationFloorIndex)
 		go ec.navigate()
 	}
 }
