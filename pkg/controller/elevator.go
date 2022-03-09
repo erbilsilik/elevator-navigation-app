@@ -74,6 +74,7 @@ func (ec *ElevatorController) OnPress(destinationFloor string, sourceFloor strin
 		if request.IsExternalRequest() {
 			sourceFloorIndex := ec.getFloorIndex(request.SourceFloor)
 			ec.queue = append(ec.queue, sourceFloorIndex)
+			(*ec.floors)[sourceFloorIndex].IsPressed = true
 		}
 		ec.queue = append(ec.queue, destinationFloorIndex)
 		go ec.handle()
