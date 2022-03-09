@@ -41,35 +41,41 @@ func (ec *ElevatorController) isElevatorGoingDown(floorIndex int) bool {
 	return ec.currentIndex > floorIndex && ec.elevator.Motion == -1
 }
 
-func (ec *ElevatorController) OnPress(floor string) {
-	floorIndex := ec.getFloorIndex(floor)
-	if floorIndex < 0 {
+func (ec *ElevatorController) OnPress(destinationFloor string, sourceFloor string) {
+	request := model.Request{DestinationFloor: destinationFloor, SourceFloor: sourceFloor}
+
+	destinationFloorIndex := ec.getFloorIndex(request.DestinationFloor)
+	if destinationFloorIndex < 0 {
 		return
 	}
 	if len(ec.queue) != 0 {
-		destinationFloorIndex := ec.queue[len(ec.queue) - 1]
+		lastDestinationFloorIndex := ec.queue[len(ec.queue) - 1]
 
-		if ec.currentIndex < floorIndex && ec.elevator.Motion == 1 {
-			if floorIndex < destinationFloorIndex {
-				(*ec.floors)[floorIndex].IsPressed = true
-			} else {
+		if ec.currentIndex < destinationFloorIndex && ec.elevator.Motion == 1 {
+			if destinationFloorIndex < lastDestinationFloorIndex {
 				(*ec.floors)[destinationFloorIndex].IsPressed = true
+			} else {
+				(*ec.floors)[lastDestinationFloorIndex].IsPressed = true
 				ec.queue = ec.queue[1:]
-				ec.queue = append(ec.queue, floorIndex)
+				ec.queue = append(ec.queue, destinationFloorIndex)
 			}
-		} else if ec.currentIndex > floorIndex && ec.elevator.Motion == -1 {
-			if floorIndex > destinationFloorIndex {
-				(*ec.floors)[floorIndex].IsPressed = true
-			} else {
+		} else if ec.currentIndex > destinationFloorIndex && ec.elevator.Motion == -1 {
+			if destinationFloorIndex > lastDestinationFloorIndex {
 				(*ec.floors)[destinationFloorIndex].IsPressed = true
+			} else {
+				(*ec.floors)[lastDestinationFloorIndex].IsPressed = true
 				ec.queue = ec.queue[1:]
-				ec.queue = append(ec.queue, floorIndex)
+				ec.queue = append(ec.queue, destinationFloorIndex)
 			}
 		} else {
-			ec.queue = append(ec.queue, floorIndex)
+			ec.queue = append(ec.queue, destinationFloorIndex)
 		}
 	} else {
-		ec.queue = append(ec.queue, floorIndex)
+		if request.IsExternalRequest() {
+			sourceFloorIndex := ec.getFloorIndex(request.SourceFloor)
+			ec.queue = append(ec.queue, sourceFloorIndex)
+		}
+		ec.queue = append(ec.queue, destinationFloorIndex)
 		go ec.handle()
 	}
 }
