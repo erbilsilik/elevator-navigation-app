@@ -65,6 +65,10 @@ func (ec *ElevatorController) appendToQueue(destinationFloorIndex int) {
 	ec.queue = append(ec.queue, destinationFloorIndex)
 }
 
+func (ec *ElevatorController) compareIndexes(index1 int, index2 int) bool {
+	return index1 > index2
+}
+
 func (ec *ElevatorController) OnPress(floor string, direction constants.Direction) {
 	request := model.Request{Floor: floor, Direction: direction}
 
@@ -79,7 +83,7 @@ func (ec *ElevatorController) OnPress(floor string, direction constants.Directio
 			if request.IsUpButtonPressed() {
 				if ec.isCurrentFloorIndexLessThanDestinationFloorIndex(destinationFloorIndex) {
 					previousDestinationFloorIndex := ec.queue[0]
-					if previousDestinationFloorIndex < destinationFloorIndex {
+					if ec.compareIndexes(destinationFloorIndex, previousDestinationFloorIndex) {
 						ec.queue = ec.queue[1:]
 						ec.appendToQueue(destinationFloorIndex)
 						ec.setPressedFloor(previousDestinationFloorIndex)
@@ -91,7 +95,14 @@ func (ec *ElevatorController) OnPress(floor string, direction constants.Directio
 				}
 			} else if request.IsDownButtonPressed() {
 				if ec.isCurrentFloorIndexGreaterThanDestinationFloorIndex(destinationFloorIndex) {
-					ec.setPressedFloor(destinationFloorIndex)
+					previousDestinationFloorIndex := ec.queue[0]
+					if ec.compareIndexes(previousDestinationFloorIndex, destinationFloorIndex) {
+						ec.queue = ec.queue[1:]
+						ec.appendToQueue(destinationFloorIndex)
+						ec.setPressedFloor(previousDestinationFloorIndex)
+					} else {
+						ec.setPressedFloor(destinationFloorIndex)
+					}
 				} else {
 					ec.appendToQueue(destinationFloorIndex)
 				}
@@ -109,6 +120,8 @@ func (ec *ElevatorController) OnPress(floor string, direction constants.Directio
 				} else {
 					ec.appendToQueue(destinationFloorIndex)
 				}
+			} else {
+				ec.appendToQueue(destinationFloorIndex)
 			}
 		}
 	} else {
