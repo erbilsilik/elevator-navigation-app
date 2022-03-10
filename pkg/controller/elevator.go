@@ -56,6 +56,10 @@ func (ec *ElevatorController) isCurrentFloorIndexGreaterThanDestinationFloorInde
 	return ec.currentIndex > destinationFloorIndex
 }
 
+func (ec *ElevatorController) isCurrentFloorIndexEqualToDestinationFloorIndex(destinationFloorIndex int) bool{
+	return ec.currentIndex == destinationFloorIndex
+}
+
 func (ec *ElevatorController) appendToQueue(destinationFloorIndex int) {
 	ec.queue = append(ec.queue, destinationFloorIndex)
 }
@@ -113,18 +117,18 @@ func (ec *ElevatorController) OnPress(floor string, direction int) {
 }
 
 func (ec *ElevatorController) navigate() {
-	if len(ec.queue) == 0 {
+	if ec.isQueueEmpty() {
 		return
 	}
-	if ec.currentIndex == ec.queue[0] {
+	if ec.isCurrentFloorIndexEqualToDestinationFloorIndex(ec.queue[0]) {
 		ec.elevator.Motion = 0
 		ec.queue = ec.queue[1:]
 		ec.fireEvent("arrived")
-		if len(ec.queue) == 0 {
+		if ec.isQueueEmpty() {
 			return
 		}
 	}
-	if ec.elevator.Motion != 0 {
+	if ec.elevator.IsMoving() {
 		ec.currentIndex += ec.elevator.Motion
 		ec.elevator.CurrentFloor = ec.getFloorFromIndex(ec.currentIndex).Name
 		ec.fireEvent("floor")
@@ -133,13 +137,13 @@ func (ec *ElevatorController) navigate() {
 			time.Sleep(ec.waitTime)
 		}
 	}
-	if len(ec.queue) > 0 {
-		if ec.currentIndex < ec.queue[0] {
+	if !ec.isQueueEmpty() {
+		if ec.isCurrentFloorIndexLessThanDestinationFloorIndex(ec.queue[0]) {
 			ec.elevator.Motion = +1
 			fmt.Print("going up...")
 			time.Sleep(ec.travelTime)
 			ec.fireEvent("up")
-		} else if ec.currentIndex > ec.queue[0] {
+		} else if ec.isCurrentFloorIndexGreaterThanDestinationFloorIndex(ec.queue[0]) {
 			fmt.Print("going down...")
 			ec.elevator.Motion = -1
 			time.Sleep(ec.travelTime)

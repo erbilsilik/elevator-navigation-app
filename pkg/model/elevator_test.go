@@ -5,13 +5,46 @@ import (
 	"testing"
 )
 
-func Test_NewElevator_WhenDefault(t *testing.T) {
-	// arrange
-	elevator := NewElevator(0, "")
+func Test_IsGoingUp_WhenIs(t *testing.T) {
+	// Arrange
+	elevator := NewElevator(1, "3")
 
-	// act
+	// Act
+	isGoingUp := elevator.IsGoingUp()
 
-	// assert
-	assert.Equal(t, "", elevator.CurrentFloor)
-	assert.Equal(t, 0, elevator.Motion)
+	// Assert
+	assert.Equal(t, true, isGoingUp)
+}
+
+func Test_IsGoingDown_WhenIs(t *testing.T) {
+	// Arrange
+	elevator := NewElevator(-1, "3")
+
+	// Act
+	isGoingDown := elevator.IsGoingDown()
+
+	// Assert
+	assert.Equal(t, true, isGoingDown)
+}
+
+func Test_IsIdle_WhenIs(t *testing.T) {
+	// Arrange
+	elevator := NewElevator(0, "3")
+
+	// Act
+	isIdle := elevator.IsIdle()
+
+	// Assert
+	assert.Equal(t, true, isIdle)
+}
+
+func Test_IsMoving_WhenIs(t *testing.T) {
+	// Arrange
+	elevator := NewElevator(1, "3")
+
+	// Act
+	isMoving := elevator.IsMoving()
+
+	// Assert
+	assert.Equal(t, true, isMoving)
 }

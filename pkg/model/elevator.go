@@ -17,6 +17,10 @@ func (e Elevator) IsIdle() bool {
 	return e.Motion == 0
 }
 
+func (e Elevator) IsMoving() bool {
+	return e.Motion != 0
+}
+
 func NewElevator(motion int, currentFloor string) *Elevator {
 	return &Elevator{
 		Motion: motion,

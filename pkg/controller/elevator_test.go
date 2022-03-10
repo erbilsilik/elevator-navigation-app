@@ -269,3 +269,5 @@ func Test_OnPress_WhenQueueIs_Not_EmptyAndCurrentIndexIs_Not_GreaterThanDestinat
 
 	// <-------------INTERNAL REQUESTS------------->
 // <-------------ON PRESS------------->
+
+// <-------------NAVIGATE------------->
