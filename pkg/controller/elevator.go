@@ -13,8 +13,6 @@ type ElevatorController struct {
 	waitTime        time.Duration
 	currentIndex    int
 	queue           []int
-	firstFloorIndex int
-	lastFloorIndex  int
 }
 
 func (ec *ElevatorController) getFloorIndex(element string) int {
