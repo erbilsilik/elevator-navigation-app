@@ -12,6 +12,6 @@ func (d Direction) Int() int{
 	return int(d)
 }
 
-const TravelTime = 1
-const WaitTime = 3
+const TravelTime = 5
+const WaitTime = 10
 

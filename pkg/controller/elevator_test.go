@@ -165,20 +165,6 @@ func Test_OnPress_WhenQueueIs_Not_EmptyAndCurrentIndexIsLessAndPreviousDestinati
 		// <-------------UP BUTTON PRESSED------------->
 
 		// <-------------DOWN BUTTON PRESSED------------->
-func Test_OnPress_WhenQueueIs_Not_EmptyAndCurrentIndexIsGreaterAndRequestIsExternalAndDownButtonPressed(t *testing.T) {
-	// Arrange
-	elevatorController := newElevatorController()
-	elevatorController.queue = append(elevatorController.queue, 4)
-	elevatorController.currentIndex = 4
-
-	// Act
-	elevatorController.OnPress("2", -1)
-	isPressed := elevatorController.getFloorFromIndex(3).IsPressed
-
-	// Assert
-	assert.Equal(t, true, isPressed)
-}
-
 func Test_OnPress_WhenQueueIs_Not_EmptyAndCurrentIndexIsLessAndRequestIsExternalAndDownButtonPressed(t *testing.T) {
 	// Arrange
 	elevatorController := newElevatorController()

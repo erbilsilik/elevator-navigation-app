@@ -49,3 +49,25 @@ func Test_IsMoving_WhenIs(t *testing.T) {
 	// Assert
 	assert.Equal(t, true, isMoving)
 }
+
+func Test_Compare_WhenIsGoingUp(t *testing.T) {
+	// Arrange
+	elevator := NewElevator(constants.Up, "3")
+
+	// Act
+	result := elevator.Compare(3, 5)
+
+	// Assert
+	assert.Equal(t, true, result)
+}
+
+func Test_Compare_WhenIsGoingDown(t *testing.T) {
+	// Arrange
+	elevator := NewElevator(constants.Down, "3")
+
+	// Act
+	result := elevator.Compare(5, 3)
+
+	// Assert
+	assert.Equal(t, true, result)
+}
