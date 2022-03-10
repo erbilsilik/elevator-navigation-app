@@ -2,16 +2,19 @@
 
 ## Description
 
-The project designed with **Model-View-Controller** (MVC) pattern. I've used [Fyne](https://developer.fyne.io/) (GUI) library as a view component.
+The project designed with **Model-View-Controller** (MVC) pattern. [Fyne](https://developer.fyne.io/) (GUI) library used as a view component.
 
-## Running & Using Instructions
+The building has 6 floors. Each floor has a button or buttons outside of the elevator to summon the elevator and tell it what direction a passenger wants to go. Floors 2-5 have up and down buttons, floor 1 has an up button only, and floor 6 has a down button only.
+
+The elevator has buttons inside for passengers to tell it what floor they want to go to, so there are 6 buttons inside, one for each floor.
+
+The simulation of the movement and waiting's has represented as console output.
+
+![alt-text](app_ss.png "elevator-navigation-app")
+
+## Running Instructions
 
 `make run`
-
-After deciding which floor you want to go to with a very simple interface, just click on the relevant floor.
-
-Meanwhile, you can watch the console output and make a another request to call the elevator to a different floor while the program is running.
-
 
 ## Test & Coverage
 
