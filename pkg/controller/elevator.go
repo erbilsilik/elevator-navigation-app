@@ -46,64 +46,70 @@ func (ec *ElevatorController) isQueueEmpty() bool {
 	return len(ec.queue) == 0
 }
 
-func (ec *ElevatorController) setFirstFloorIndex() {
-	ec.firstFloorIndex = ec.getFloorIndex("1")
-}
-
-func (ec *ElevatorController) setLastFloorIndex() {
-	ec.lastFloorIndex = ec.getFloorIndex("6")
-}
-
 func (ec *ElevatorController) setPressedFloor(floorIndex int) {
 	(*ec.floors)[floorIndex].IsPressed = true
+}
+
+func (ec *ElevatorController) isCurrentFloorIndexLessThanDestinationFloorIndex(destinationFloorIndex int) bool{
+	return ec.currentIndex < destinationFloorIndex
+}
+
+func (ec *ElevatorController) isCurrentFloorIndexGreaterThanDestinationFloorIndex(destinationFloorIndex int) bool{
+	return ec.currentIndex > destinationFloorIndex
+}
+
+func (ec *ElevatorController) appendToQueue(destinationFloorIndex int) {
+	ec.queue = append(ec.queue, destinationFloorIndex)
 }
 
 func (ec *ElevatorController) OnPress(floor string, direction int) {
 	request := model.Request{Floor: floor, Direction: direction}
 
 	destinationFloorIndex := ec.getFloorIndex(request.Floor)
+
 	if !ec.isValidDestination(destinationFloorIndex) {
 		return
 	}
+
 	if !ec.isQueueEmpty() {
 		if request.IsExternalRequest() {
 			if request.IsUpButtonPressed() {
-				if ec.currentIndex < destinationFloorIndex {
-					previousDestinationIndex := ec.queue[0]
-					if previousDestinationIndex < destinationFloorIndex {
+				if ec.isCurrentFloorIndexLessThanDestinationFloorIndex(destinationFloorIndex) {
+					previousDestinationFloorIndex := ec.queue[0]
+					if previousDestinationFloorIndex < destinationFloorIndex {
 						ec.queue = ec.queue[1:]
-						ec.queue = append(ec.queue, destinationFloorIndex)
-						ec.setPressedFloor(previousDestinationIndex)
+						ec.appendToQueue(destinationFloorIndex)
+						ec.setPressedFloor(previousDestinationFloorIndex)
 					} else {
-						(*ec.floors)[destinationFloorIndex].IsPressed = true
+						ec.setPressedFloor(destinationFloorIndex)
 					}
 				} else {
-					ec.queue = append(ec.queue, destinationFloorIndex)
+					ec.appendToQueue(destinationFloorIndex)
 				}
 			} else if request.IsDownButtonPressed() {
-				if ec.currentIndex > destinationFloorIndex {
+				if ec.isCurrentFloorIndexGreaterThanDestinationFloorIndex(destinationFloorIndex) {
 					ec.setPressedFloor(destinationFloorIndex)
 				} else {
-					ec.queue = append(ec.queue, destinationFloorIndex)
+					ec.appendToQueue(destinationFloorIndex)
 				}
 			}
-		} else {
-			if ec.elevator.Motion == 1 {
-				if ec.currentIndex < destinationFloorIndex {
+		} else if request.IsInternalRequest() {
+			if ec.elevator.IsGoingUp() {
+				if ec.isCurrentFloorIndexLessThanDestinationFloorIndex(destinationFloorIndex) {
 					ec.setPressedFloor(destinationFloorIndex)
 				} else {
-					ec.queue = append(ec.queue, destinationFloorIndex)
+					ec.appendToQueue(destinationFloorIndex)
 				}
-			} else if ec.elevator.Motion == -1 {
-				if ec.currentIndex > destinationFloorIndex {
+			} else if ec.elevator.IsGoingDown() {
+				if ec.isCurrentFloorIndexGreaterThanDestinationFloorIndex(destinationFloorIndex) {
 					ec.setPressedFloor(destinationFloorIndex)
 				} else {
-					ec.queue = append(ec.queue, destinationFloorIndex)
+					ec.appendToQueue(destinationFloorIndex)
 				}
 			}
 		}
 	} else {
-		ec.queue = append(ec.queue, destinationFloorIndex)
+		ec.appendToQueue(destinationFloorIndex)
 		go ec.navigate()
 	}
 }
@@ -152,7 +158,7 @@ func (ec *ElevatorController) fireEvent(floor string) {
 
 func NewElevatorController(floors *[]model.Floor, elevator *model.Elevator, travelTime time.Duration, waitTime time.Duration,
 	currentIndex int, queue []int) *ElevatorController {
-	elevatorController := &ElevatorController{
+	return &ElevatorController{
 		floors: floors,
 		elevator: elevator,
 		travelTime: travelTime,
@@ -160,9 +166,4 @@ func NewElevatorController(floors *[]model.Floor, elevator *model.Elevator, trav
 		currentIndex: currentIndex,
 		queue: queue,
 	}
-
-	elevatorController.setFirstFloorIndex()
-	elevatorController.setLastFloorIndex()
-
-	return elevatorController
 }

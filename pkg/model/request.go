@@ -9,6 +9,10 @@ func (r *Request) IsExternalRequest() bool  {
 	return r.Direction != 0
 }
 
+func (r *Request) IsInternalRequest() bool  {
+	return r.Direction == 0
+}
+
 func (r *Request) IsUpButtonPressed() bool  {
 	return r.Direction == 1
 }

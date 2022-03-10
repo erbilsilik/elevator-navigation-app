@@ -4,11 +4,11 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
-	controller2 "github.com/erbilsilik/elevator-navigation-app/pkg/controller"
+	"github.com/erbilsilik/elevator-navigation-app/pkg/controller"
 )
 
 type Elevator struct {
-	elevatorController *controller2.ElevatorController
+	elevatorController *controller.ElevatorController
 	output  *widget.Label
 	buttons map[string]*widget.Button
 	window  fyne.Window
@@ -99,7 +99,7 @@ func (e *Elevator) LoadUI(app fyne.App) {
 	e.window.Show()
 }
 
-func NewElevator(elevatorController *controller2.ElevatorController) *Elevator {
+func NewElevator(elevatorController *controller.ElevatorController) *Elevator {
 	return &Elevator{
 		elevatorController: elevatorController,
 		buttons: make(map[string] * widget.Button, 19),
