@@ -80,42 +80,22 @@ func (ec *ElevatorController) OnPress(floor string, direction constants.Directio
 
 	if !ec.isQueueEmpty() {
 		if request.IsExternalRequest() {
-			if request.IsUpButtonPressed() {
-				if ec.isCurrentFloorIndexLessThanDestinationFloorIndex(destinationFloorIndex) {
-					previousDestinationFloorIndex := ec.queue[0]
-					if ec.compareIndexes(destinationFloorIndex, previousDestinationFloorIndex) {
-						ec.queue = ec.queue[1:]
-						ec.appendToQueue(destinationFloorIndex)
-						ec.setPressedFloor(previousDestinationFloorIndex)
-					} else {
-						ec.setPressedFloor(destinationFloorIndex)
-					}
-				} else {
+			if request.Compare(ec.currentIndex, destinationFloorIndex) {
+				previousDestinationFloorIndex := ec.queue[0]
+				index1, index2 := request.GetIndexesByButtonPress(destinationFloorIndex, previousDestinationFloorIndex)
+				if ec.compareIndexes(index1, index2) {
+					ec.queue = ec.queue[1:]
 					ec.appendToQueue(destinationFloorIndex)
-				}
-			} else if request.IsDownButtonPressed() {
-				if ec.isCurrentFloorIndexGreaterThanDestinationFloorIndex(destinationFloorIndex) {
-					previousDestinationFloorIndex := ec.queue[0]
-					if ec.compareIndexes(previousDestinationFloorIndex, destinationFloorIndex) {
-						ec.queue = ec.queue[1:]
-						ec.appendToQueue(destinationFloorIndex)
-						ec.setPressedFloor(previousDestinationFloorIndex)
-					} else {
-						ec.setPressedFloor(destinationFloorIndex)
-					}
+					ec.setPressedFloor(previousDestinationFloorIndex)
 				} else {
-					ec.appendToQueue(destinationFloorIndex)
+					ec.setPressedFloor(destinationFloorIndex)
 				}
+			} else {
+				ec.appendToQueue(destinationFloorIndex)
 			}
 		} else if request.IsInternalRequest() {
-			if ec.elevator.IsGoingUp() {
-				if ec.isCurrentFloorIndexLessThanDestinationFloorIndex(destinationFloorIndex) {
-					ec.setPressedFloor(destinationFloorIndex)
-				} else {
-					ec.appendToQueue(destinationFloorIndex)
-				}
-			} else if ec.elevator.IsGoingDown() {
-				if ec.isCurrentFloorIndexGreaterThanDestinationFloorIndex(destinationFloorIndex) {
+			if ec.elevator.IsGoingUp() || ec.elevator.IsGoingDown() {
+				if ec.elevator.Compare(ec.currentIndex, destinationFloorIndex) {
 					ec.setPressedFloor(destinationFloorIndex)
 				} else {
 					ec.appendToQueue(destinationFloorIndex)
