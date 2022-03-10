@@ -20,11 +20,3 @@ Meanwhile, you can watch the console output and make a another request to call t
 ## Help
 
 `make help`
-
-## Notes
-
-Due to my limited time, I want to share the missing points.
-
-- I've tried to do a multi-stage Docker build, however there were some errors due to Fyne components.
-- Some parts of *ElevatorController* is still procedural. *OnPress and handle* methods can be divided to sub functions.
-- From the above statement, after creating sub functions, **test** coverage can also be increased.
