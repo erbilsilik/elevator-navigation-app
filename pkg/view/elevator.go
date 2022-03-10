@@ -4,6 +4,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
+	"github.com/erbilsilik/elevator-navigation-app/pkg/constants"
 	"github.com/erbilsilik/elevator-navigation-app/pkg/controller"
 )
 
@@ -32,13 +33,13 @@ func (e *Elevator) internalRequestButton(floor string) *widget.Button {
 
 func (e *Elevator) externalRequestButton(floorDirection string, sourceFloor string) *widget.Button {
 	return e.addButton(floorDirection, func() {
-		var direction int
+		var direction constants.Direction
 		if floorDirection == "Up" {
-			direction = 1
+			direction = constants.Up
 		} else if floorDirection == "Down"{
-			direction = -1
+			direction = constants.Down
 		} else {
-			direction = 0
+			direction = constants.Idle
 		}
 		e.elevatorController.OnPress(sourceFloor, direction)
 	})

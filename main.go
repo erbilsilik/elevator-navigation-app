@@ -2,6 +2,7 @@ package main
 
 import (
 	"fyne.io/fyne/v2/app"
+	"github.com/erbilsilik/elevator-navigation-app/pkg/constants"
 	"github.com/erbilsilik/elevator-navigation-app/pkg/controller"
 	"github.com/erbilsilik/elevator-navigation-app/pkg/model"
 	"github.com/erbilsilik/elevator-navigation-app/pkg/view"
@@ -23,8 +24,8 @@ func main() {
 			{Name: "6", IsPressed: false},
 		},
 		elevator,
-		time.Second * 5,
-		time.Second * 10,
+		time.Second * constants.TravelTime,
+		time.Second * constants.WaitTime,
 		0,
 		nil,
 	)

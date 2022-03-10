@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"github.com/erbilsilik/elevator-navigation-app/pkg/constants"
 	"github.com/erbilsilik/elevator-navigation-app/pkg/model"
 	"time"
 )
@@ -64,7 +65,7 @@ func (ec *ElevatorController) appendToQueue(destinationFloorIndex int) {
 	ec.queue = append(ec.queue, destinationFloorIndex)
 }
 
-func (ec *ElevatorController) OnPress(floor string, direction int) {
+func (ec *ElevatorController) OnPress(floor string, direction constants.Direction) {
 	request := model.Request{Floor: floor, Direction: direction}
 
 	destinationFloorIndex := ec.getFloorIndex(request.Floor)
@@ -121,7 +122,7 @@ func (ec *ElevatorController) navigate() {
 		return
 	}
 	if ec.isCurrentFloorIndexEqualToDestinationFloorIndex(ec.queue[0]) {
-		ec.elevator.Motion = 0
+		ec.elevator.Direction = constants.Idle
 		ec.queue = ec.queue[1:]
 		ec.fireEvent("arrived")
 		if ec.isQueueEmpty() {
@@ -129,7 +130,7 @@ func (ec *ElevatorController) navigate() {
 		}
 	}
 	if ec.elevator.IsMoving() {
-		ec.currentIndex += ec.elevator.Motion
+		ec.currentIndex += ec.elevator.Direction.Int()
 		ec.elevator.CurrentFloor = ec.getFloorFromIndex(ec.currentIndex).Name
 		ec.fireEvent("floor")
 		if ec.getFloorFromIndex(ec.currentIndex).IsPressed {
@@ -139,13 +140,13 @@ func (ec *ElevatorController) navigate() {
 	}
 	if !ec.isQueueEmpty() {
 		if ec.isCurrentFloorIndexLessThanDestinationFloorIndex(ec.queue[0]) {
-			ec.elevator.Motion = +1
+			ec.elevator.Direction = +1
 			fmt.Print("going up...")
 			time.Sleep(ec.travelTime)
 			ec.fireEvent("up")
 		} else if ec.isCurrentFloorIndexGreaterThanDestinationFloorIndex(ec.queue[0]) {
 			fmt.Print("going down...")
-			ec.elevator.Motion = -1
+			ec.elevator.Direction = -1
 			time.Sleep(ec.travelTime)
 			ec.fireEvent("down")
 		}

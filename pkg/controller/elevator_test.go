@@ -211,7 +211,7 @@ func Test_OnPress_WhenQueueIs_Not_EmptyAndCurrentIndexIsLessThanDestinationAndRe
 	elevatorController := newElevatorController()
 	elevatorController.queue = append(elevatorController.queue, 5)
 	elevatorController.currentIndex = 3
-	elevatorController.elevator.Motion = 1
+	elevatorController.elevator.Direction = 1
 
 	// Act
 	elevatorController.OnPress("1", 0)
@@ -225,7 +225,7 @@ func Test_OnPress_WhenQueueIs_Not_EmptyAndCurrentIndexIs_Not_LessThanDestination
 	elevatorController := newElevatorController()
 	elevatorController.queue = append(elevatorController.queue, 5)
 	elevatorController.currentIndex = 2
-	elevatorController.elevator.Motion = 1
+	elevatorController.elevator.Direction = 1
 
 	// Act
 	elevatorController.OnPress("2", 0)
@@ -241,7 +241,7 @@ func Test_OnPress_WhenQueueIs_Not_EmptyAndCurrentIndexIsGreaterThanDestinationAn
 	elevatorController := newElevatorController()
 	elevatorController.queue = append(elevatorController.queue, 6)
 	elevatorController.currentIndex = 5
-	elevatorController.elevator.Motion = -1
+	elevatorController.elevator.Direction = -1
 
 	// Act
 	elevatorController.OnPress("2", 0)
@@ -257,7 +257,7 @@ func Test_OnPress_WhenQueueIs_Not_EmptyAndCurrentIndexIs_Not_GreaterThanDestinat
 	elevatorController := newElevatorController()
 	elevatorController.queue = append(elevatorController.queue, 6)
 	elevatorController.currentIndex = 2
-	elevatorController.elevator.Motion = -1
+	elevatorController.elevator.Direction = -1
 
 	// Act
 	elevatorController.OnPress("2", 0)
@@ -269,5 +269,3 @@ func Test_OnPress_WhenQueueIs_Not_EmptyAndCurrentIndexIs_Not_GreaterThanDestinat
 
 	// <-------------INTERNAL REQUESTS------------->
 // <-------------ON PRESS------------->
-
-// <-------------NAVIGATE------------->

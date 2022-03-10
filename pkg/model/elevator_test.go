@@ -1,13 +1,14 @@
 package model
 
 import (
+	"github.com/erbilsilik/elevator-navigation-app/pkg/constants"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func Test_IsGoingUp_WhenIs(t *testing.T) {
 	// Arrange
-	elevator := NewElevator(1, "3")
+	elevator := NewElevator(constants.Up, "3")
 
 	// Act
 	isGoingUp := elevator.IsGoingUp()
@@ -18,7 +19,7 @@ func Test_IsGoingUp_WhenIs(t *testing.T) {
 
 func Test_IsGoingDown_WhenIs(t *testing.T) {
 	// Arrange
-	elevator := NewElevator(-1, "3")
+	elevator := NewElevator(constants.Down, "3")
 
 	// Act
 	isGoingDown := elevator.IsGoingDown()
@@ -29,7 +30,7 @@ func Test_IsGoingDown_WhenIs(t *testing.T) {
 
 func Test_IsIdle_WhenIs(t *testing.T) {
 	// Arrange
-	elevator := NewElevator(0, "3")
+	elevator := NewElevator(constants.Idle, "3")
 
 	// Act
 	isIdle := elevator.IsIdle()
@@ -40,7 +41,7 @@ func Test_IsIdle_WhenIs(t *testing.T) {
 
 func Test_IsMoving_WhenIs(t *testing.T) {
 	// Arrange
-	elevator := NewElevator(1, "3")
+	elevator := NewElevator(constants.Up, "3")
 
 	// Act
 	isMoving := elevator.IsMoving()

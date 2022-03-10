@@ -1,29 +1,31 @@
 package model
 
+import "github.com/erbilsilik/elevator-navigation-app/pkg/constants"
+
 type Elevator struct {
-	Motion       int
+	Direction    constants.Direction
 	CurrentFloor string
 }
 
 func (e Elevator) IsGoingUp() bool {
-	return e.Motion == 1
+	return e.Direction == constants.Up
 }
 
 func (e Elevator) IsGoingDown() bool {
-	return e.Motion == -1
+	return e.Direction == constants.Down
 }
 
 func (e Elevator) IsIdle() bool {
-	return e.Motion == 0
+	return e.Direction == constants.Idle
 }
 
 func (e Elevator) IsMoving() bool {
-	return e.Motion != 0
+	return e.Direction != constants.Idle
 }
 
-func NewElevator(motion int, currentFloor string) *Elevator {
+func NewElevator(direction constants.Direction, currentFloor string) *Elevator {
 	return &Elevator{
-		Motion: motion,
+		Direction: direction,
 		CurrentFloor: currentFloor,
 	}
 }
